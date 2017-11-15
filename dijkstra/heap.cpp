@@ -28,7 +28,6 @@ int heap::insert(const std::string &id, int key, void *pv){
   data[filled+1].id = id;
   data[filled+1].key = key;
   data[filled+1].pData = pv;
-  cout << "inserted address: " << data[filled+1].pData << endl;
   mapping->insert(id, &data[filled+1]);
   percolateUp(filled+1);
 
@@ -59,7 +58,7 @@ int heap::setKey(const std::string &id, int key){
 // is called to re-establish heap order and the filled property of this class is
 // updated to reflect the change.
 int heap::deleteMin(std::string *pId, int *pKey, void *ppData){
-  cout << "pointer passed to deleteMin's id before processing: " << (static_cast<graph::vertex *> (ppData))->id << endl;
+  //cout << "pointer passed to deleteMin's id before processing: " << (static_cast<graph::vertex *> (ppData))->id << endl;
   if(filled == 0){
     return 1;
   }

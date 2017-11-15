@@ -37,7 +37,7 @@ void dijkstra(graph &graphToTraverse, string startVertexName){
   string edgeName;
   int updatingWeights;
   graph::vertex *startVertex;
-  graph::vertex *adjacentToAnalyze;
+  graph::vertex *startAdjacentToAnalyze;
   int edgeNumber = 0;
 
   startVertex = static_cast<graph::vertex *> (graphToTraverse.getVertex(startVertexName));
@@ -45,19 +45,21 @@ void dijkstra(graph &graphToTraverse, string startVertexName){
   startVertex->previousVertex = NULL;
   startVertex->isDefined = true;
 
+  cout << "startVertex address: " << startVertex << endl;
+
   for(std::list<graph::edge>::iterator iterEdge = startVertex->edges.begin(); iterEdge != startVertex->edges.end();){
-    adjacentToAnalyze = static_cast<graph::vertex *> (iterEdge->adjacentVertex);
-    cout << edgeNumber << adjacentToAnalyze->id << adjacentToAnalyze->isDefined << adjacentToAnalyze->minDistance << endl;
-    dijkstraHeap.insert(std::to_string(edgeNumber), iterEdge->weight, adjacentToAnalyze);
-    cout << "address insert should have inserted: " << adjacentToAnalyze << endl;
+    startAdjacentToAnalyze = static_cast<graph::vertex *> (iterEdge->adjacentVertex);
+    cout << edgeNumber << startAdjacentToAnalyze->id << startAdjacentToAnalyze->isDefined << startAdjacentToAnalyze->minDistance << endl;
+    dijkstraHeap.insert(std::to_string(edgeNumber), iterEdge->weight, startAdjacentToAnalyze);
+    cout << "address insert should have inserted: " << startAdjacentToAnalyze << endl;
     edgeNumber++;
-    if(adjacentToAnalyze->minDistance == -1){
-      adjacentToAnalyze->minDistance = iterEdge->weight;
-      adjacentToAnalyze->previousVertex = startVertex;
+    if(startAdjacentToAnalyze->minDistance == -1){
+      startAdjacentToAnalyze->minDistance = iterEdge->weight;
+      startAdjacentToAnalyze->previousVertex = startVertex;
     }
-    else if((adjacentToAnalyze->minDistance)>(startVertex->minDistance + iterEdge->weight)){
-      adjacentToAnalyze->minDistance = startVertex->minDistance + iterEdge->weight;
-      adjacentToAnalyze->previousVertex = startVertex;
+    else if((startAdjacentToAnalyze->minDistance)>(startVertex->minDistance + iterEdge->weight)){
+      startAdjacentToAnalyze->minDistance = startVertex->minDistance + iterEdge->weight;
+      startAdjacentToAnalyze->previousVertex = startVertex;
     }
      iterEdge++;
   }
@@ -65,8 +67,12 @@ void dijkstra(graph &graphToTraverse, string startVertexName){
   cout << "The in between area..." << endl;
 
   while(!graphToTraverse.isSolved){
+    cout << "goes into loop" << endl;
     graph::vertex *vertexToAnalyze;
-    cout << "deleteMin returned: " << dijkstraHeap.deleteMin(&edgeName, &updatingWeights, vertexToAnalyze) << endl;
+    graph::vertex *adjacentToAnalyze;
+    int *updatingWeights;
+    string *edgeName;
+    cout << "deleteMin returned: " << dijkstraHeap.deleteMin(edgeName, updatingWeights, &vertexToAnalyze) << endl;
     cout << "vertexToAnalyze address: " << vertexToAnalyze << endl;
     cout << "vertexToAnalyze's id before loop: " << vertexToAnalyze->id << endl;
     if(static_cast<graph::vertex *> (vertexToAnalyze)->isDefined){
@@ -115,15 +121,22 @@ int main(){
   graph dijkstraGraph(1000);
   string startVertex = "";
 
-  cout << "Enter name of graph file: ";
-  cin >> inputFilename;
+  // cout << "Enter name of graph file: ";
+  // cin >> inputFilename;
+  // loadGraph(inputFilename, dijkstraGraph);
+  // while(!dijkstraGraph.contains(startVertex)){
+  //   cout << "Enter a valid vertex id for the starting vertex: ";
+  //   cin >> startVertex;
+  // }
+  // cout << "Enter name of output file: ";
+  // cin >> outputFilename;
+
+  //DELETE WHEN FINISHED
+  inputFilename = "graph.txt";
+  startVertex = "v1";
+  outputFilename = "output.txt";
   loadGraph(inputFilename, dijkstraGraph);
-  while(!dijkstraGraph.contains(startVertex)){
-    cout << "Enter a valid vertex id for the starting vertex: ";
-    cin >> startVertex;
-  }
-  cout << "Enter name of output file: ";
-  cin >> outputFilename;
+
 
   checkStartTime = clock();
   dijkstra(dijkstraGraph, startVertex);
