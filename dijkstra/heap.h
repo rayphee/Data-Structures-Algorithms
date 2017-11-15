@@ -81,6 +81,8 @@ private:
 
   hashTable *mapping; // Maps ids to node pointers
 
+  int resize(int oldSize);
+
   // A method designed to determine how to maintain (heap) order!
   void whichPercolate(int posCur);
 

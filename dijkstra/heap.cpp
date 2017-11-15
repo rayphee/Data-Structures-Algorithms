@@ -10,7 +10,7 @@
 using namespace std;
 
 // insert function: first determines if the heap is filled; if so, the function
-// returns 1. If the string "id" passed to it is already in the heap, the function
+// resizes. If the string "id" passed to it is already in the heap, the function
 // returns 2 after evaluating the boolean returned by the getPointer method from
 // the hashTable class. Once the criteria for a valid insert is met, the function
 // sets the fields for each data node to their appropriately passed values.
@@ -20,7 +20,7 @@ int heap::insert(const std::string &id, int key, void *pv){
   bool b;
   node *pn = static_cast<node *> (mapping->getPointer(id, &b));
   if(heapCapacity == filled){
-    return 1;
+    resize(heapCapacity);
   }
   else if(b){
     return 2;
@@ -101,6 +101,16 @@ int heap::remove(const std::string &id, int *pKey, void *ppData){
   filled--;
   whichPercolate(position);
   return 0;
+}
+
+// resize function: resizes the heap to accomodate more nodes in neccessary.
+int heap::resize(int oldSize){
+  heapCapacity = 2*oldSize;
+  data.resize(2*oldSize+1)
+
+  for(int i=0;i<2*oldSize+1;i++){
+    mapping->setPointer(data[i].id, &data[i]);
+  }
 }
 
 // whichPercolate function: checks if the position in question has a key that does

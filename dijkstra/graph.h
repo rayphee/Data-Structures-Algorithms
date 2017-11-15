@@ -16,16 +16,19 @@ public:
 
   graph(int capacity = 100);
 
-  int insert(std::string &sourceVertex, std::string &sinkVertex, int cost);
+  int insertEdge(std::string &sourceVertex, std::string &sinkVertex, int cost);
 
   bool contains(const std::string &vertex);
 
 private:
 
   class edge{
+  public:
     int weight;
     void *originVertex;
     void *adjacentVertex;
+
+    edge(int cost, void *firstVertex, void *lastVertex);
   };
 
   class vertex{

@@ -17,8 +17,8 @@ void loadGraph(string inputFilename, graph &graphToLoad){
 
   inputFile.open(inputFilename.c_str());
   if (!inputFile) {
-      cerr << "Error: could not open " << inputFilename << endl;
-      exit(1);
+    cerr << "Error: could not open " << inputFilename << endl;
+    exit(1);
   }
   string line;
   while(getline(inputFile, line)){
@@ -26,7 +26,7 @@ void loadGraph(string inputFilename, graph &graphToLoad){
     string source, sink;
     int cost;
     ss >> source >> sink >> cost;
-    graphToLoad.insert(source, sink, cost);
+    graphToLoad.insertEdge(source, sink, cost);
   }
   inputFile.close();
 }
