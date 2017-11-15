@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include "hash.h"
+#include "graph.h"
 
 class heap{
 
@@ -64,6 +65,8 @@ public:
   //   1 if a node with the given id does not exist
   int remove(const std::string &id, int *pKey = NULL, void *ppData = NULL);
 
+  bool isEmpty();
+
 private:
 
   // Nested node class within the heap
@@ -81,7 +84,7 @@ private:
 
   hashTable *mapping; // Maps ids to node pointers
 
-  int resize(int oldSize);
+  void resize(int oldSize);
 
   // A method designed to determine how to maintain (heap) order!
   void whichPercolate(int posCur);

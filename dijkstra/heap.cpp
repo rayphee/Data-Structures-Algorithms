@@ -28,6 +28,7 @@ int heap::insert(const std::string &id, int key, void *pv){
   data[filled+1].id = id;
   data[filled+1].key = key;
   data[filled+1].pData = pv;
+  cout << "inserted address: " << data[filled+1].pData << endl;
   mapping->insert(id, &data[filled+1]);
   percolateUp(filled+1);
 
@@ -58,6 +59,7 @@ int heap::setKey(const std::string &id, int key){
 // is called to re-establish heap order and the filled property of this class is
 // updated to reflect the change.
 int heap::deleteMin(std::string *pId, int *pKey, void *ppData){
+  cout << "pointer passed to deleteMin's id before processing: " << (static_cast<graph::vertex *> (ppData))->id << endl;
   if(filled == 0){
     return 1;
   }
@@ -68,6 +70,13 @@ int heap::deleteMin(std::string *pId, int *pKey, void *ppData){
   if(pKey){
     *pKey = data[1].key;
   }
+
+  cout << "deleteMin key returned: " << data[1].key << endl;
+  cout << "deleteMin pointer address returned: " << data[1].pData << endl;
+  cout << "id from pointer deleteMin returns: " << (static_cast<graph::vertex *> (data[1].pData))->id << endl;
+  cout << "pointer passed to deleteMin's id after processing: " << (static_cast<graph::vertex *> (ppData))->id << endl;
+  cout << "actual address of deleteMin's id returned: " << ppData << endl;
+
   mapping->remove(data[1].id);
   data[1] = data[filled];
   mapping->setPointer(data[1].id, &data[1]);
@@ -103,10 +112,19 @@ int heap::remove(const std::string &id, int *pKey, void *ppData){
   return 0;
 }
 
+bool heap::isEmpty(){
+  if(filled == 0){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
 // resize function: resizes the heap to accomodate more nodes in neccessary.
-int heap::resize(int oldSize){
+void heap::resize(int oldSize){
   heapCapacity = 2*oldSize;
-  data.resize(2*oldSize+1)
+  data.resize(2*oldSize+1);
 
   for(int i=0;i<2*oldSize+1;i++){
     mapping->setPointer(data[i].id, &data[i]);

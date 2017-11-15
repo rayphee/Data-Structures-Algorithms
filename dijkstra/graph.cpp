@@ -18,13 +18,13 @@ int graph::insertEdge(string &sourceVertexName, string &sinkVertexName, int cost
     vertex insertionSourceVertex(sourceVertexName);
     vertices.push_back(insertionSourceVertex);
     mapping->insert(sourceVertexName, &vertices.back());
-    *sourceVertex = static_cast<vertex> (vertices.back());
+    sourceVertex = static_cast<vertex *> (mapping->getPointer(sourceVertexName, &graphContainsSource));
   }
   if(!graphContainsSink){
     vertex insertionSinkVertex(sinkVertexName);
     vertices.push_back(insertionSinkVertex);
     mapping->insert(sinkVertexName, &vertices.back());
-    *sinkVertex = static_cast<vertex> (vertices.back());
+    sinkVertex = static_cast<vertex *> (mapping->getPointer(sinkVertexName, &graphContainsSink));
   }
   edge insertionEdge(cost, sourceVertex, sinkVertex);
   sourceVertex->edges.push_back(insertionEdge);
@@ -35,9 +35,15 @@ bool graph::contains(const std::string &vertex){
   return mapping->contains(vertex);
 }
 
+void *graph::getVertex(const std::string &vertex){
+  bool b;
+  return mapping->getPointer(vertex, &b);
+}
+
 
 graph::graph(int capacity){
   mapping = new hashTable(capacity*2);
+  isSolved = false;
 }
 
 graph::vertex::vertex(std::string &name){

@@ -1,8 +1,8 @@
 //Rafi Mueen
 //DSA Assignment 5
 
-#ifndef _HEAP_H
-#define _HEAP_H
+#ifndef _GRAPH_H
+#define _GRAPH_H
 
 #include <vector>
 #include <list>
@@ -20,7 +20,9 @@ public:
 
   bool contains(const std::string &vertex);
 
-private:
+  void *getVertex(const std::string &vertex);
+
+  bool isSolved;
 
   class edge{
   public:
@@ -43,8 +45,8 @@ private:
   };
 
   std::list<vertex> vertices;
+
   hashTable *mapping;
-  void *dijkstraHeap;
 };
 
 #endif //_GRAPH_H
