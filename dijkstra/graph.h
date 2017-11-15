@@ -8,6 +8,7 @@
 #include <list>
 #include <string>
 #include "hash.h"
+#include "heap.h"
 
 class graph{
 
@@ -21,6 +22,12 @@ public:
 
 private:
 
+  class edge{
+    int weight;
+    void *originVertex;
+    void *adjacentVertex;
+  };
+
   class vertex{
   public:
     std::string id;
@@ -28,19 +35,13 @@ private:
     int minDistance;
     void *previousVertex;
 
-    vertex(bool isDefined = false, int minDistance = -1, void *previousVertex = NULL);
-
-    class edge{
-      int weight;
-      void *adjacentVertex;
-    };
+    vertex(std::string &id);
     std::list<edge> edges;
   };
 
   std::list<vertex> vertices;
-
   hashTable *mapping;
-
+  void *dijkstraHeap;
 };
 
 #endif //_GRAPH_H
