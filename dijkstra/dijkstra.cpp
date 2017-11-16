@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <stack>
 #include <ctime>
 #include <cmath>
 #include <algorithm>
@@ -34,77 +35,54 @@ void loadGraph(string inputFilename, graph &graphToLoad){
 }
 void dijkstra(graph &graphToTraverse, string startVertexName){
   heap dijkstraHeap(100);
-  string edgeName;
-  int updatingWeights;
-  graph::vertex *startVertex;
-  graph::vertex *startAdjacentToAnalyze;
+  string *edgeName;
+  int *updatingWeights;
+  void *vertexToAnalyzeVoid;
+  graph::vertex *vertexToAnalyze;
+  graph::vertex *adjacentToAnalyze;
   int edgeNumber = 0;
 
-  startVertex = static_cast<graph::vertex *> (graphToTraverse.getVertex(startVertexName));
-  startVertex->minDistance = 0;
-  startVertex->previousVertex = NULL;
-  startVertex->isDefined = true;
+  vertexToAnalyze = static_cast<graph::vertex *> (graphToTraverse.getVertex(startVertexName));
+  vertexToAnalyze->minDistance = 0;
+  vertexToAnalyze->previousVertex = NULL;
+  vertexToAnalyze->isDefined = true;
 
-  // cout << "startVertex address: " << startVertex << endl;
-
-  for(std::list<graph::edge>::iterator iterEdge = startVertex->edges.begin(); iterEdge != startVertex->edges.end();){
-    startAdjacentToAnalyze = static_cast<graph::vertex *> (iterEdge->adjacentVertex);
-    // cout << edgeNumber << startAdjacentToAnalyze->id << startAdjacentToAnalyze->isDefined << startAdjacentToAnalyze->minDistance << endl;
-    dijkstraHeap.insert(std::to_string(edgeNumber), iterEdge->weight, startAdjacentToAnalyze);
+  for(std::list<graph::edge>::iterator iterEdge = vertexToAnalyze->edges.begin(); iterEdge != vertexToAnalyze->edges.end();){
+    adjacentToAnalyze = static_cast<graph::vertex *> (iterEdge->adjacentVertex);
+    dijkstraHeap.insert(std::to_string(edgeNumber), iterEdge->weight, adjacentToAnalyze);
     edgeNumber++;
-    cout << "Iteration " << edgeNumber << " with weight " << iterEdge->weight << endl;
-    if(startAdjacentToAnalyze->minDistance == -1){
-      startAdjacentToAnalyze->minDistance = iterEdge->weight;
-      startAdjacentToAnalyze->previousVertex = startVertex;
-      cout << startAdjacentToAnalyze->id << ": minDistance: " << startAdjacentToAnalyze->minDistance << endl;
+    if(adjacentToAnalyze->minDistance == -1){
+      adjacentToAnalyze->minDistance = iterEdge->weight;
+      adjacentToAnalyze->previousVertex = vertexToAnalyze;
     }
-    else if((startAdjacentToAnalyze->minDistance)>(startVertex->minDistance + iterEdge->weight)){
-      startAdjacentToAnalyze->minDistance = startVertex->minDistance + iterEdge->weight;
-      startAdjacentToAnalyze->previousVertex = startVertex;
-      cout << startAdjacentToAnalyze->id << ": minDistance: " << startAdjacentToAnalyze->minDistance << endl;
+    else if((adjacentToAnalyze->minDistance)>(vertexToAnalyze->minDistance + iterEdge->weight)){
+      adjacentToAnalyze->minDistance = vertexToAnalyze->minDistance + iterEdge->weight;
+      adjacentToAnalyze->previousVertex = vertexToAnalyze;
     }
      iterEdge++;
   }
 
 
   while(!graphToTraverse.isSolved){
-    // cout << "goes into loop" << endl;
-    graph::vertex *vertexToAnalyze;
-    graph::vertex *adjacentToAnalyze;
-    int updatingWeights;
-    string *edgeName;
-    cout << "deleteMin returned: " << dijkstraHeap.deleteMin(edgeName, &updatingWeights, &vertexToAnalyze) << endl;
-    //cout << "vertexToAnalyze address: " << vertexToAnalyze << endl;
-    //cout << "vertexToAnalyze's id before loop: " << (static_cast<graph::vertex *> (vertexToAnalyze))->id << endl;
-    // if(static_cast<graph::vertex *> (vertexToAnalyze)->isDefined){
-    //   graphToTraverse.isSolved = true;
-    //   return;
-    // }
-    if(!(static_cast<graph::vertex *> (vertexToAnalyze)->isDefined)){
-      static_cast<graph::vertex *> (vertexToAnalyze)->isDefined = true;
+    dijkstraHeap.deleteMin(edgeName, updatingWeights, &vertexToAnalyzeVoid);
+    vertexToAnalyze = static_cast<graph::vertex *> (vertexToAnalyzeVoid);
+    if(!vertexToAnalyze->isDefined){
+      vertexToAnalyze->isDefined = true;
       for(std::list<graph::edge>::iterator iterEdge = vertexToAnalyze->edges.begin(); iterEdge != vertexToAnalyze->edges.end();){
         adjacentToAnalyze = static_cast<graph::vertex *> (iterEdge->adjacentVertex);
-        // cout << edgeNumber << adjacentToAnalyze->id << adjacentToAnalyze->isDefined << adjacentToAnalyze->minDistance << endl;
         dijkstraHeap.insert(std::to_string(edgeNumber), iterEdge->weight, adjacentToAnalyze);
-        // cout << "address insert should have inserted: " << adjacentToAnalyze << endl;
-        cout << "Iteration " << edgeNumber << " with weight " << iterEdge->weight << endl;
         edgeNumber++;
         if(adjacentToAnalyze->minDistance == -1){
-          adjacentToAnalyze->minDistance = (static_cast<graph::vertex *> (vertexToAnalyze))->minDistance + iterEdge->weight;
+          adjacentToAnalyze->minDistance = vertexToAnalyze->minDistance + iterEdge->weight;
           adjacentToAnalyze->previousVertex = vertexToAnalyze;
-          cout << (static_cast<graph::vertex *> (adjacentToAnalyze->previousVertex))->id;
-          cout << adjacentToAnalyze->id << ": minDistance: " << adjacentToAnalyze->minDistance << endl;
         }
-        else if((adjacentToAnalyze->minDistance) > ((static_cast<graph::vertex *> (vertexToAnalyze))->minDistance + iterEdge->weight)){
-          adjacentToAnalyze->minDistance = (static_cast<graph::vertex *> (vertexToAnalyze))->minDistance + iterEdge->weight;
+        else if((adjacentToAnalyze->minDistance)>(vertexToAnalyze->minDistance + iterEdge->weight)){
+          adjacentToAnalyze->minDistance = vertexToAnalyze->minDistance + iterEdge->weight;
           adjacentToAnalyze->previousVertex = vertexToAnalyze;
-          cout << (static_cast<graph::vertex *> (adjacentToAnalyze->previousVertex))->id;
-          cout << adjacentToAnalyze->id << ": minDistance: " << adjacentToAnalyze->minDistance << endl;
         }
          iterEdge++;
       }
     }
-    cout << "vertexToAnalyze's id after loop: " << vertexToAnalyze->id << endl;
     if(dijkstraHeap.isEmpty()){
       graphToTraverse.isSolved = true;
     }
@@ -113,27 +91,32 @@ void dijkstra(graph &graphToTraverse, string startVertexName){
 }
 
 void outputSolvedGraph(string outputFilename, graph &solvedGraph){
+  ofstream outputFile(outputFilename.c_str());
+  stack<std::string> tracebackStack;
   for(std::list<graph::vertex>::iterator iterVert = solvedGraph.vertices.begin(); iterVert != solvedGraph.vertices.end(); iterVert++){
-    cout << iterVert->id << ": ";
+    outputFile << iterVert->id << ": ";
     if(iterVert->isDefined){
-      cout << iterVert->minDistance;
-      cout << " [";
+      outputFile << iterVert->minDistance;
+      outputFile << " [";
       graph::vertex *tracebackVertex;
       graph::vertex *helloVertex;
       tracebackVertex = static_cast<graph::vertex *> (iterVert->previousVertex);
-      // helloVertex =
-      // cout << tracebackVertex->id;
       while(tracebackVertex){
-        cout << tracebackVertex->id << ", ";
+        tracebackStack.push(tracebackVertex->id);
         tracebackVertex = (static_cast<graph::vertex *> (tracebackVertex->previousVertex));
       }
-      cout << iterVert->id;
-      cout << "]" << endl;
+      while(!tracebackStack.empty()){
+        outputFile << tracebackStack.top() << ", ";
+        tracebackStack.pop();
+      }
+      outputFile << iterVert->id;
+      outputFile << "]" << endl;
     }
     else{
-      cout << "NO PATH" << endl;
+      outputFile << "NO PATH" << endl;
     }
   }
+  outputFile.close();
 }
 
 int main(){
@@ -143,22 +126,15 @@ int main(){
   graph dijkstraGraph(1000);
   string startVertex = "";
 
-  // cout << "Enter name of graph file: ";
-  // cin >> inputFilename;
-  // loadGraph(inputFilename, dijkstraGraph);
-  // while(!dijkstraGraph.contains(startVertex)){
-  //   cout << "Enter a valid vertex id for the starting vertex: ";
-  //   cin >> startVertex;
-  // }
-  // cout << "Enter name of output file: ";
-  // cin >> outputFilename;
-
-  //DELETE WHEN FINISHED
-  inputFilename = "graph.txt";
-  startVertex = "v1";
-  outputFilename = "output.txt";
+  cout << "Enter name of graph file: ";
+  cin >> inputFilename;
   loadGraph(inputFilename, dijkstraGraph);
-
+  while(!dijkstraGraph.contains(startVertex)){
+    cout << "Enter a valid vertex id for the starting vertex: ";
+    cin >> startVertex;
+  }
+  cout << "Enter name of output file: ";
+  cin >> outputFilename;
 
   checkStartTime = clock();
   dijkstra(dijkstraGraph, startVertex);
