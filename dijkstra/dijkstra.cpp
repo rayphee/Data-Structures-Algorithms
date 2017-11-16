@@ -98,6 +98,7 @@ void dijkstra(graph &graphToTraverse, string startVertexName){
         else if((adjacentToAnalyze->minDistance) > ((static_cast<graph::vertex *> (vertexToAnalyze))->minDistance + iterEdge->weight)){
           adjacentToAnalyze->minDistance = (static_cast<graph::vertex *> (vertexToAnalyze))->minDistance + iterEdge->weight;
           adjacentToAnalyze->previousVertex = vertexToAnalyze;
+          cout << (static_cast<graph::vertex *> (adjacentToAnalyze->previousVertex))->id;
           cout << adjacentToAnalyze->id << ": minDistance: " << adjacentToAnalyze->minDistance << endl;
         }
          iterEdge++;
@@ -118,13 +119,15 @@ void outputSolvedGraph(string outputFilename, graph &solvedGraph){
       cout << iterVert->minDistance;
       cout << " [";
       graph::vertex *tracebackVertex;
+      graph::vertex *helloVertex;
       tracebackVertex = static_cast<graph::vertex *> (iterVert->previousVertex);
-      // cout << (static_cast<graph::vertex *> (iterVert->previousVertex))->id;
-      // while(!((static_cast<graph::vertex *> (tracebackVertex))->previousVertex)){
-      //   cout << (static_cast<graph::vertex *> (tracebackVertex->previousVertex))->id << ", ";
-      //   tracebackVertex = (static_cast<graph::vertex *> (tracebackVertex->previousVertex));
-      //   cout << "beam me up scottie" << endl;
-      // }
+      // helloVertex =
+      // cout << tracebackVertex->id;
+      while(tracebackVertex){
+        cout << tracebackVertex->id << ", ";
+        tracebackVertex = (static_cast<graph::vertex *> (tracebackVertex->previousVertex));
+      }
+      cout << iterVert->id;
       cout << "]" << endl;
     }
     else{
