@@ -58,23 +58,24 @@ int heap::setKey(const std::string &id, int key){
 // is called to re-establish heap order and the filled property of this class is
 // updated to reflect the change.
 int heap::deleteMin(std::string *pId, int *pKey, void *ppData){
-  //cout << "pointer passed to deleteMin's id before processing: " << (static_cast<graph::vertex *> (ppData))->id << endl;
+  // cout << "external pointer id before processing: " << (static_cast<graph::vertex *> (ppData))->id << endl;
+  // cout << "external pointer address before processing: " << ppData << endl;
   if(filled == 0){
     return 1;
   }
-  *pId = data[1].id;
+  //*pId = data[1].id;
   if(ppData){
-    ppData = data[1].pData;
+    *(static_cast<void **> (ppData)) = data[1].pData;
   }
   if(pKey){
     *pKey = data[1].key;
   }
 
-  cout << "deleteMin key returned: " << data[1].key << endl;
-  cout << "deleteMin pointer address returned: " << data[1].pData << endl;
-  cout << "id from pointer deleteMin returns: " << (static_cast<graph::vertex *> (data[1].pData))->id << endl;
-  cout << "pointer passed to deleteMin's id after processing: " << (static_cast<graph::vertex *> (ppData))->id << endl;
-  cout << "actual address of deleteMin's id returned: " << ppData << endl;
+  // cout << "deleteMin internal key returned: " << data[1].key << endl;
+  // cout << "deleteMin internal pointer address returned: " << data[1].pData << endl;
+  // cout << "deleteMin internal pointer id returned: " << (static_cast<graph::vertex *> (data[1].pData))->id << endl;
+  // cout << "external pointer id after processing: " << (static_cast<graph::vertex *> (ppData))->id << endl;
+  // cout << "external pointer address after processing: " << ppData << endl;
 
   mapping->remove(data[1].id);
   data[1] = data[filled];
