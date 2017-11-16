@@ -62,6 +62,7 @@ void dijkstra(graph &graphToTraverse, string startVertexName){
      iterEdge++;
   }
 
+  cout << endl;
 
   while(!graphToTraverse.isSolved){
     dijkstraHeap.deleteMin(edgeName, updatingWeights, &vertexToAnalyzeVoid);
@@ -119,6 +120,8 @@ void outputSolvedGraph(string outputFilename, graph &solvedGraph){
   outputFile.close();
 }
 
+// main function: initializes empty graph and associated variables required to load
+// and output graph data
 int main(){
   clock_t checkStartTime, checkEndTime;
   double checkTime;
