@@ -65,8 +65,6 @@ public:
   //   1 if a node with the given id does not exist
   int remove(const std::string &id, int *pKey = NULL, void *ppData = NULL);
 
-  bool isEmpty();
-
 private:
 
   // Nested node class within the heap

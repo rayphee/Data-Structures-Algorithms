@@ -112,15 +112,6 @@ int heap::remove(const std::string &id, int *pKey, void *ppData){
   return 0;
 }
 
-bool heap::isEmpty(){
-  if(filled == 0){
-    return true;
-  }
-  else{
-    return false;
-  }
-}
-
 // resize function: resizes the heap to accomodate more nodes in neccessary.
 void heap::resize(int oldSize){
   heapCapacity = 2*oldSize;

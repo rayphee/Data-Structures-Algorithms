@@ -7,14 +7,14 @@
 #include <sstream>
 #include <stack>
 #include <ctime>
-#include <cmath>
-#include <algorithm>
-
 #include "graph.h"
 #include "heap.h"
 
 using namespace std;
 
+// loadGraph function: creates a filestream with the string passed to it as the
+// file from which it streams. Parses each line into three pieces, which serve
+// as arguments to the insertEdge function for the graph passed to it.
 void loadGraph(string inputFilename, graph &graphToLoad){
   ifstream inputFile;
 
@@ -33,64 +33,69 @@ void loadGraph(string inputFilename, graph &graphToLoad){
   }
   inputFile.close();
 }
+
+// dijkstra function: where the magic happens. A heap is created to hold the
+// vertices and their minimum weights. First, the starting vertex is readied by
+// setting its minDistance to 0 and marking it as isDefined true. Then, all of its
+// adjacent vertices are added to the heap with their minDistance updated as
+// necessary. The following loop keeps running until the heap is completely empty,
+// but is essentially an extension of the first loop for the starting vertex, yet
+// opened up for the following vertices.
 void dijkstra(graph &graphToTraverse, string startVertexName){
   heap dijkstraHeap(100);
-  string *edgeName;
+  string *poppedVertexName;
   int *updatingWeights;
-  void *vertexToAnalyzeVoid;
   graph::vertex *vertexToAnalyze;
   graph::vertex *adjacentToAnalyze;
-  int edgeNumber = 0;
+  int currentPathCost;
 
   vertexToAnalyze = static_cast<graph::vertex *> (graphToTraverse.getVertex(startVertexName));
   vertexToAnalyze->minDistance = 0;
-  vertexToAnalyze->previousVertex = NULL;
   vertexToAnalyze->isDefined = true;
 
-  for(std::list<graph::edge>::iterator iterEdge = vertexToAnalyze->edges.begin(); iterEdge != vertexToAnalyze->edges.end();){
+  for(list<graph::edge>::iterator iterEdge = vertexToAnalyze->edges.begin(); iterEdge != vertexToAnalyze->edges.end();++iterEdge){
     adjacentToAnalyze = static_cast<graph::vertex *> (iterEdge->adjacentVertex);
-    dijkstraHeap.insert(std::to_string(edgeNumber), iterEdge->weight, adjacentToAnalyze);
-    edgeNumber++;
+    currentPathCost = iterEdge->weight;
     if(adjacentToAnalyze->minDistance == -1){
-      adjacentToAnalyze->minDistance = iterEdge->weight;
+      dijkstraHeap.insert(adjacentToAnalyze->id, iterEdge->weight, adjacentToAnalyze);
       adjacentToAnalyze->previousVertex = vertexToAnalyze;
+      adjacentToAnalyze->minDistance = currentPathCost;
     }
-    else if((adjacentToAnalyze->minDistance)>(vertexToAnalyze->minDistance + iterEdge->weight)){
-      adjacentToAnalyze->minDistance = vertexToAnalyze->minDistance + iterEdge->weight;
+    else if(adjacentToAnalyze->minDistance > currentPathCost){
+      dijkstraHeap.setKey(adjacentToAnalyze->id, currentPathCost);
       adjacentToAnalyze->previousVertex = vertexToAnalyze;
+      adjacentToAnalyze->minDistance = currentPathCost;
     }
-     iterEdge++;
   }
 
-  cout << endl;
-
-  while(!graphToTraverse.isSolved){
-    dijkstraHeap.deleteMin(edgeName, updatingWeights, &vertexToAnalyzeVoid);
-    vertexToAnalyze = static_cast<graph::vertex *> (vertexToAnalyzeVoid);
+  while(!dijkstraHeap.deleteMin(poppedVertexName, updatingWeights, &vertexToAnalyze)){
+    vertexToAnalyze = static_cast<graph::vertex *> (vertexToAnalyze);
     if(!vertexToAnalyze->isDefined){
       vertexToAnalyze->isDefined = true;
-      for(std::list<graph::edge>::iterator iterEdge = vertexToAnalyze->edges.begin(); iterEdge != vertexToAnalyze->edges.end();){
+      for(list<graph::edge>::iterator iterEdge = vertexToAnalyze->edges.begin(); iterEdge != vertexToAnalyze->edges.end();++iterEdge){
         adjacentToAnalyze = static_cast<graph::vertex *> (iterEdge->adjacentVertex);
-        dijkstraHeap.insert(std::to_string(edgeNumber), iterEdge->weight, adjacentToAnalyze);
-        edgeNumber++;
+        currentPathCost = vertexToAnalyze->minDistance + iterEdge->weight;
         if(adjacentToAnalyze->minDistance == -1){
-          adjacentToAnalyze->minDistance = vertexToAnalyze->minDistance + iterEdge->weight;
+          dijkstraHeap.insert(adjacentToAnalyze->id, currentPathCost, adjacentToAnalyze);
           adjacentToAnalyze->previousVertex = vertexToAnalyze;
+          adjacentToAnalyze->minDistance = currentPathCost;
         }
-        else if((adjacentToAnalyze->minDistance)>(vertexToAnalyze->minDistance + iterEdge->weight)){
-          adjacentToAnalyze->minDistance = vertexToAnalyze->minDistance + iterEdge->weight;
+        else if(adjacentToAnalyze->minDistance > currentPathCost){
+          dijkstraHeap.setKey(adjacentToAnalyze->id, currentPathCost);
           adjacentToAnalyze->previousVertex = vertexToAnalyze;
+          adjacentToAnalyze->minDistance = currentPathCost;
         }
-         iterEdge++;
       }
     }
-    if(dijkstraHeap.isEmpty()){
-      graphToTraverse.isSolved = true;
-    }
   }
-  return;
 }
 
+// outputSolvedGraph function: creates a filestream for the file specified by the
+// string inputted to it first. Then, the graph that was passed iterates through
+// each vertex, determines if it is defined (if not "NO PATH" is printed). If it is
+// defined, a stack is initialized to iterate through all previousVertex's for the
+// vertex found and printed in order by successively popping after its minDistance
+// is printed.
 void outputSolvedGraph(string outputFilename, graph &solvedGraph){
   ofstream outputFile(outputFilename.c_str());
   stack<std::string> tracebackStack;
@@ -121,7 +126,8 @@ void outputSolvedGraph(string outputFilename, graph &solvedGraph){
 }
 
 // main function: initializes empty graph and associated variables required to load
-// and output graph data
+// and output graph data. Also prints commands to terminal window to facilitate
+// process of loading and outputting the graph/algorithm results.
 int main(){
   clock_t checkStartTime, checkEndTime;
   double checkTime;
